@@ -1,63 +1,103 @@
 import customtkinter as ctk
-from streamlit import button
 
 window = ctk.CTk()
-window.title("Ai essay grader")
+window.title("AI Essay Grader")
 window.geometry("1280x720")
 
-#-------Def--------
+
+# ---------------- FUNCTIONS ---------------- #
+
 def clear_text():
-    listbox.delete("1.0", "end")
+    text_box.delete("1.0", "end")
+    result_label.configure(text="")
+
 
 def grade_essay():
-    essay = listbox.get("1.0", "end").strip()
+    essay = text_box.get("1.0", "end").strip()
+
     if essay:
-        # Here you would implement your AI grading logic
-        # For demonstration, we'll just return a dummy grade
-        grade = "A"  # Replace with actual grading logic
-        result = f"Essay Grade: {grade}"
+        word_count = len(essay.split())
+
+        # SIMPLE GRADING LOGIC
+        if word_count > 400:
+            grade = "A"
+        elif word_count > 200:
+            grade = "B"
+        else:
+            grade = "C"
+
+        result_label.configure(
+            text=f"Grade: {grade} | Words: {word_count}"
+        )
+
     else:
-        result = "Please enter an essay to grade."
-    
-    listbox.delete("1.0", "end")
-    listbox.insert("1.0", result)
-
-#-------Labels---------
-ctk.CTkLabel(window, text="AI Essay Grader!",
-              font=ctk.CTkFont(size=40, weight="bold")).pack(pady=10)
-
-#-------BOX---------
-box_frame = ctk.CTkFrame(window)
-box_frame.pack(pady=10)
-ctk.CTkLabel(box_frame, text="Enter your essay below:",
-                font=ctk.CTkFont(size=20)).pack()
-
-box_frame2 = ctk.CTkFrame(window)
-box_frame2.pack(pady=10, side="right", padx=20)
-
-#-------Text Box---------
-listbox = ctk.CTkTextbox(window, width=800, height=700,
-                         font=ctk.CTkFont(size=16),
-                         scrollbar_button_color="lightgray")
-listbox.pack(pady=20, side="left", padx=20)
-
-#-------Buttons---------
-button_frame = ctk.CTkFrame(window)
-button_frame.pack(pady=20, side="right", padx=20)
-button1 = ctk.CTkButton(button_frame, text="Grade Essay",
-                        font=ctk.CTkFont(size=16),
-                        width=200, height=50)
-button1.pack(pady=10)
+        result_label.configure(text="Please enter an essay.")
 
 
-button2 = ctk.CTkButton(button_frame, text="Clear",
-                        font=ctk.CTkFont(size=16),
-                        width=200, height=50)
+# ---------------- TITLE ---------------- #
 
-button2.configure(command=clear_text)
+ctk.CTkLabel(
+    window,
+    text="AI Essay Grader",
+    font=ctk.CTkFont(size=40, weight="bold")
+).pack(pady=10)
 
-button2.pack(pady=10)
+
+# ---------------- MAIN FRAME ---------------- #
+
+main_frame = ctk.CTkFrame(window)
+main_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
 
+# ---------------- TEXT BOX ---------------- #
+
+text_box = ctk.CTkTextbox(main_frame, width=800, height=600)
+text_box.pack(side="left", padx=20, pady=20)
+
+
+# ---------------- SIDE PANEL ---------------- #
+
+side_frame = ctk.CTkFrame(main_frame)
+side_frame.pack(side="right", padx=20, pady=20)
+
+
+ctk.CTkLabel(
+    side_frame,
+    text="Enter Essay → Click Grade",
+    font=ctk.CTkFont(size=18)
+).pack(pady=10)
+
+
+# ---------------- BUTTONS ---------------- #
+
+ctk.CTkButton(
+    side_frame,
+    text="Grade Essay",
+    command=grade_essay,
+    width=200,
+    height=50
+).pack(pady=10)
+
+
+ctk.CTkButton(
+    side_frame,
+    text="Clear",
+    command=clear_text,
+    width=200,
+    height=50
+).pack(pady=10)
+
+
+# ---------------- RESULT ---------------- #
+
+result_label = ctk.CTkLabel(
+    side_frame,
+    text="",
+    font=ctk.CTkFont(size=18)
+)
+result_label.pack(pady=20)
+
+
+# ---------------- RUN ---------------- #
 
 window.mainloop()
